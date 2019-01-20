@@ -16,12 +16,23 @@ def signup(request):
         else:
             error = "Confirm Password is not correct"
             return render(request,'account/signup.html',{'error':error})
-
-    return render(request,'account/signup.html')
+    else:
+        return render(request,'account/signup.html')
 
 def login(request):
-    
-    return render(request,'account/login.html')
+    if request.method == 'POST':
+        user = auth.authenticate(username=request.POST['username'],password=request.POST['password'])
+        if  user is not None:
+            auth.login(request,user)
+            return redirect('home')
+        else:
+            error="Invalid password or username"
+            return render (request,'account/login.html',{'error':error})
+
+    else:
+        return render(request,'account/login.html')
 
 def logout(request):
-    pass
+    if request.method == 'POST':
+        auth.logout(request)
+        return redirect('login')
